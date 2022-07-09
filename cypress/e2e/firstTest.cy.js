@@ -38,4 +38,26 @@ cy.contains('Form Layouts').click()
 
 })
 
+it.only('second test', ()=>{
+    cy.visit('/')
+    cy.contains('Forms').click()
+    cy.contains('Form Layouts').click()
+    
+    cy.get('[data-cy="signInButton"]')
+
+    cy.contains('Sign in')
+    cy.contains('[status="warning"]','Sign in')
+///na když na stránce není element unikátní, tak se dá postupovat, pomocí toho, pokud jiný element, který má stejný parent je unikátní
+    cy.get('#inputEmail3')
+    .parents('form')
+    .find('button')
+    .should('contain','Sign in')
+    .parents('form')
+    .find('nb-checkbox')
+    .click()
+
+    cy.contains('nb-card','Horizontal form').find('[type="email"]')
+
+
+})
 })
