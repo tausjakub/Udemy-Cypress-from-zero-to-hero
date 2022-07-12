@@ -1,5 +1,7 @@
 /// <reference types="cypress"/>
 
+const { Input } = require("@angular/core")
+
 describe('Pur first suite', ()=>{
 
 it('first test', ()=>{
@@ -38,7 +40,7 @@ cy.contains('Form Layouts').click()
 
 })
 
-it.only('second test', ()=>{
+it('second test', ()=>{
     cy.visit('/')
     cy.contains('Forms').click()
     cy.contains('Form Layouts').click()
@@ -60,4 +62,87 @@ it.only('second test', ()=>{
 
 
 })
+
+it('then and wrap methods', ()=>{
+    cy.visit('/')
+    cy.contains('Forms').click()
+    cy.contains('Form Layouts').click()
+
+    cy.contains('nb-card','Using the Grid').find('[for="inputEmail1"]').should('contain','Email')
+    cy.contains('nb-card','Using the Grid').find('[for="inputPassword2"]').should('contain','Password')
+    cy.contains('nb-card','Basic form').find('[for="exampleInputEmail1"]').should('contain','Email')
+    cy.contains('nb-card','Basic form').find('[for="exampleInputPassword1"]').should('contain','Password')
+
+    //parametrizace v cypresss --> přes jQuery --> pokud se chci vrátit zpátky do Cypress, tak přes cy.wrap
+    cy.contains('nb-card','Using the Grid').then( firstForm =>{
+        const emailLabelFirst = firstForm.find('[for="inputEmail1"]').text()
+        const passwordLabelFirst = firstForm.find('[for="inputPassword2"]').text()
+        expect(emailLabelFirst).to.equal('Email')
+        expect(passwordLabelFirst).to.equal('Password')
+
+        cy.contains('nb-card','Basic form').then( secondForm =>{
+           //const emailLabelSecond = secondForm.find('[for="exampleInputEmail1"]').text()
+            const passwordLabelSecond = secondForm.find('[for="exampleInputPassword1"]').text()
+           //expect(emailLabelFirst).to.equal(emailLabelSecond)
+            expect(passwordLabelFirst).to.equal(passwordLabelSecond)
+
+            cy.wrap(secondForm).find('[for="exampleInputPassword1"]').should('contain','Password')
+
+        })
+
+    })
+
+})
+
+it('inoke commands', ()=>{
+    cy.visit('/')
+    cy.contains('Forms').click()
+    cy.contains('Form Layouts').click()
+
+    //příklady jak pracovat s textem
+    
+    //1
+    cy.get('[for="exampleInputEmail1"]').should('contain', 'Email address')
+
+    //2
+    cy.get('[for="exampleInputEmail1"]').then( label =>{
+
+        expect(label.text()).to.equal('Email address')
+    })
+
+    //3
+    cy.get('[for="exampleInputEmail1"]').invoke('text').then( text =>{
+        expect('text')
+
+    })
+
+    cy.contains('nb-card','Basic form')
+        .find('nb-checkbox')
+        .click()
+        .find('.custom-checkbox')
+        .invoke('attr', 'class')
+       //1.možnost 
+       .should('contain','checked')
+       //2. možnost
+       .then(classValue =>{
+            expect(classValue).to.contain('checked')
+       })
+
+})
+
+//kontrola u datepickeru přes property
+
+it.only('assert property',()=>{
+    cy.visit('/')
+    cy.contains('Forms').click()
+    cy.contains('Datepicker').click()
+    
+    cy.contains('nb-card','Common Datepicker').find('input').then(input=>{
+        cy.wrap(input).click()
+        cy.get('nb-calendar-day-picker').contains('14').click()
+        cy.wrap(input).invoke('prop','value').should('contain','14')
+
+    })
+})
+
 })
